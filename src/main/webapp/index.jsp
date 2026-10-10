@@ -149,6 +149,7 @@
                 <a href="${pageContext.request.contextPath}/">Home</a>
                 <a href="#recipes">Recipes</a>
                 <a href="#about">About</a>
+                <a href="${pageContext.request.contextPath}/add-recipe.jsp">Add Recipe</a>
             </nav>
         </div>
     </header>
@@ -168,6 +169,22 @@
         <section id="recipes">
             <h2>Explore Our Recipes</h2>
             <p>Find inspiration for your next meal.</p>
+            
+            <div style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap;">
+    <input
+        type="text"
+        id="recipeSearch"
+        placeholder="Search recipes..."
+        style="padding: 12px; width: 250px; max-width: 100%; border: 1px solid #ccc; border-radius: 5px;"
+    >
+
+    <select
+        id="categoryFilter"
+        style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;"
+    >
+        <option value="">All Categories</option>
+    </select>
+</div>
 
             <div class="recipe-grid">
 
@@ -214,5 +231,59 @@
         <p>&copy; 2026 RecipeNest - Online Recipe Sharing Platform</p>
     </footer>
 
+    <script>
+    const searchInput = document.getElementById("recipeSearch");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const recipeCards = document.querySelectorAll(".recipe-card");
+
+    // Add categories automatically from the displayed recipes
+    recipeCards.forEach(function(card) {
+        const categoryElement = card.querySelector(".category");
+
+        if (categoryElement) {
+            const category = categoryElement.textContent.trim();
+
+            if (category !== "") {
+                const exists = Array.from(categoryFilter.options).some(
+                    option => option.value.toLowerCase() === category.toLowerCase()
+                );
+
+                if (!exists) {
+                    const option = document.createElement("option");
+                    option.value = category;
+                    option.textContent = category;
+                    categoryFilter.appendChild(option);
+                }
+            }
+        }
+    });
+
+    function filterRecipes() {
+        const searchText = searchInput.value.toLowerCase().trim();
+        const selectedCategory = categoryFilter.value.toLowerCase();
+
+        recipeCards.forEach(function(card) {
+            const title = card.querySelector("h3").textContent.toLowerCase();
+            const description = card.querySelector("p").textContent.toLowerCase();
+            const category = card.querySelector(".category").textContent.toLowerCase();
+
+            const matchesSearch =
+                title.includes(searchText) ||
+                description.includes(searchText) ||
+                category.includes(searchText);
+
+            const matchesCategory =
+                selectedCategory === "" ||
+                category.trim() === selectedCategory;
+
+            card.style.display =
+                matchesSearch && matchesCategory ? "" : "none";
+        });
+    }
+
+    searchInput.addEventListener("input", filterRecipes);
+    categoryFilter.addEventListener("change", filterRecipes);
+</script>
+    
 </body>
 </html>

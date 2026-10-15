@@ -5,6 +5,7 @@ import com.recipenest.util.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class RatingDAO {
@@ -18,12 +19,11 @@ public class RatingDAO {
         }
 
         String sql = "INSERT INTO ratings (user_id, recipe_id, rating) "
-                   + "VALUES (?, ?, ?) "
-                   + "ON DUPLICATE KEY UPDATE rating = VALUES(rating)";
+                + "VALUES (?, ?, ?) "
+                + "ON DUPLICATE KEY UPDATE rating = VALUES(rating)";
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, userId);
             statement.setInt(2, recipeId);
@@ -31,5 +31,41 @@ public class RatingDAO {
 
             return statement.executeUpdate() > 0;
         }
+    }
+
+    public double getAverageRating(int recipeId) throws SQLException {
+        String sql = "SELECT AVG(rating) FROM ratings WHERE recipe_id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, recipeId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getDouble(1);
+                }
+            }
+        }
+
+        return 0.0;
+    }
+
+    public int getRatingCount(int recipeId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM ratings WHERE recipe_id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, recipeId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            }
+        }
+
+        return 0;
     }
 }

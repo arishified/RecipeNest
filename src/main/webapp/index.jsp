@@ -141,18 +141,31 @@
 
 <body>
 
-    <header>
-        <div class="navbar">
-            <div class="logo">Recipe<span>Nest</span></div>
+   
+<header>
+    <div class="navbar">
+        <div class="logo">Recipe<span>Nest</span></div>
 
-            <nav>
-                <a href="${pageContext.request.contextPath}/">Home</a>
-                <a href="#recipes">Recipes</a>
-                <a href="#about">About</a>
-                <a href="${pageContext.request.contextPath}/add-recipe.jsp">Add Recipe</a>
-            </nav>
-        </div>
-    </header>
+        <nav>
+            <a href="${pageContext.request.contextPath}/home">Home</a>
+            <a href="#recipes">Recipes</a>
+            <a href="#about">About</a>
+            <a href="${pageContext.request.contextPath}/add-recipe.jsp">Add Recipe</a>
+
+            <c:choose>
+                <c:when test="${not empty sessionScope.userId}">
+                    <span>Hi, <c:out value="${sessionScope.userName}" /></span>
+                    <a href="${pageContext.request.contextPath}/logout">Logout</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/login">Login</a>
+                    <a href="${pageContext.request.contextPath}/register">Register</a>
+                </c:otherwise>
+            </c:choose>
+        </nav>
+    </div>
+</header>
+
 
     <section class="hero">
         <h1>Discover Recipes. Share Your Passion.</h1>
